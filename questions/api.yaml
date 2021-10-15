@@ -50,13 +50,13 @@ paths:
           description: sucessful operation
           schema: 
             $ref: '#/definitions/Question'
-  /question/{questionId}:
+  /question/{question_id}:
     get:
       tags:
       - question
       summary: Get question information
       parameters:
-      - name: questionId
+      - name: question_id
         in: path
         description: searchable Id of a question
         type: string
@@ -68,13 +68,13 @@ paths:
             $ref: '#/definitions/Question'
         404:
           description: Question not found
-  /answer/{questionId}:
+  /answer/{question_id}:
     get:
       tags:
       - answer
       summary: All answers of a question
       parameters:
-      - name: questionId
+      - name: question_id
         in: path
         description: Searchable id of a question
         type: string
@@ -97,7 +97,7 @@ paths:
         description: Question parameters
         required: true
         schema:
-          $ref: '#/definitions/AnswerCreation'
+          $ref: '#/definitions/AnswerCreate'
       responses:
         200:
           description: successful operation
@@ -112,30 +112,41 @@ definitions:
         format: int64
       body:
         type: string
+      user_id:
+        type: string
   QuestionCreate:
     type: object
     properties:
       body:
         type: string
+      user_id:
+        type: integer
+        format: int64
   Answer:
     type: object
     properties:
       id:
         type: integer
         format: int64
-      questionId:
+      question_id:
         type: integer
         format: int64
       body:
         type: string
-  AnswerCreation:
+      user_id:
+        type: integer
+        format: int64
+  AnswerCreate:
     type: object
     properties:
-      questionId:
+      question_id:
         type: integer
         format: int64
       body:
         type: string
+      user_id:
+        type: integer
+        format: int64
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
 basePath: /P4369/PFPI/1.0.0
