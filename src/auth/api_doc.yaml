@@ -1,0 +1,96 @@
+---
+swagger: "2.0"
+info:
+  description: This describes the REST Api of the authentication microservice
+  version: 1.0.0
+  title: Authentication Microservice
+  contact:
+    email: lari1415@hotmail.com
+host: virtserver.swaggerhub.com
+basePath: /Lary15/Rust_Q_and_A_Web_App/1.0.0
+tags:
+- name: users
+  description: Operations available to regular users
+schemes:
+- https
+paths:
+  /sign_in:
+    post:
+      tags:
+      - users
+      summary: login on the aplication
+      description: |
+        When the propers credentials are sent, the user can be authenticated to the platform
+      operationId: login
+      produces:
+      - application/json
+      parameters:
+      - name: email
+        in: query
+        description: user email
+        required: true
+        type: string
+      - name: password
+        in: query
+        description: user password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Authenticated user
+          schema:
+            $ref: '#/definitions/User'
+        "400":
+          description: Credentials invalid
+  /sign_up:
+    post:
+      tags:
+      - users
+      summary: register a user
+      description: |
+        Register a new account on the platform
+      operationId: signup
+      produces:
+      - application/json
+      parameters:
+      - name: username
+        in: query
+        description: short identifier string
+        required: true
+        type: string
+      - name: email
+        in: query
+        description: user email
+        required: true
+        type: string
+      - name: password
+        in: query
+        description: user password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          schema:
+            $ref: '#/definitions/User'
+        "400":
+          description: Credentials invalid
+definitions:
+  User:
+    type: object
+    required:
+    - email
+    - id
+    - name
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      name:
+        type: string
+        example: User223
+      email:
+        type: string
+        format: email
+        example: user@email.com
