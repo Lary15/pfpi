@@ -1,5 +1,28 @@
 #[macro_use] extern crate rocket;
-use rocket::serde::{Deserialize, json::Json};
+// WIP
+// use rocket::request::Request;
+// use rocket::data::{self,Data, FromData};
+// use rocket::http::{Status, ContentType};
+
+// struct CommentAnswer {
+//     user_id: String,
+//     answer_id: String,
+// }
+
+// #[rocket::async_trait]
+// impl FromData for CommentAnswer {
+//     type Error = String;
+
+//     async fn from_data(req: &'r Request<'_>, data: Data<'r>) -> data::Outcome<'r, Self>{
+//         use Error::*;
+//         use rocket::outcome::Outcome;
+
+
+//         let comment_ct = ContentType::new("application", "x-C")
+//     }
+
+// }
+
 
 
 #[post("/create_answer")]
