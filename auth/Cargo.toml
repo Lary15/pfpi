@@ -8,3 +8,4 @@ edition = "2018"
 [dependencies]
 oauth2 = "4.1"
 rocket = "0.5.0-rc.1"
+dotenv_codegen = "0.15.0"
