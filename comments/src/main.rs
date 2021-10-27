@@ -1,7 +1,20 @@
-#[macro_use] extern crate rocket;
+#[macro_use] 
+extern crate rocket;
+extern crate diesel;
+extern crate dotenv;
+
+pub mod models;
+pub mod schema;
+pub mod connection;
 
 use uuid::Uuid;
 use rocket::serde::{Deserialize, Serialize, json::Json};
+use diesel::prelude::*;
+use dotenv::dotenv;
+use std::env;
+use self::models::{Comment_Answer, Comment_Question};
+use self::connection::connection_db;
+
 
 #[derive(Deserialize)]
 struct Comment <'r> {
@@ -52,7 +65,9 @@ struct GetAllResponse  {
 
 
 #[post("/create_answer?<user_id>&<answer_id>", data = "<comment>")]
-fn create_comment_answer(user_id: Uuid, answer_id: Uuid, comment: Json<Comment<'_>>) -> Json<ResponseComment> {
+pub fn create_comment_answer<'a>(user_id: Uuid, answer_id: Uuid, comment: Json<Comment<'_>>) -> Json<ResponseComment> {
+
+    let conn = connection_db;
 
     let comment_id = Uuid::new_v4();
 
