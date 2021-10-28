@@ -1,85 +1,76 @@
-#[macro_use] 
-extern crate rocket;
-extern crate diesel;
+#[macro_use] extern crate rocket;
+#[macro_use] extern crate diesel;
 extern crate dotenv;
+
 
 pub mod models;
 pub mod schema;
 pub mod connection;
+pub mod request;
+pub mod responses;
 
-use uuid::Uuid;
 use rocket::serde::{Deserialize, Serialize, json::Json};
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
-use self::models::{Comment_Answer, Comment_Question};
+use self::models::*;
 use self::connection::connection_db;
-
-
-#[derive(Deserialize)]
-struct Comment <'r> {
-    message: & 'r str,
-}
-
-#[derive(Deserialize)]
-struct EditComment <'r> {
-    id: Uuid,
-    message: &'r str,
-}
-
-#[derive(Deserialize)]
-struct GetAllComments {
-    id: Uuid,
-}
-
-#[derive(Serialize)]
-struct ResponseComment <'r> {
-    user_id: Uuid,
-    qa_id: Uuid,
-    id: Uuid,
-    comment: & 'r str,
-}
-
-#[derive(Serialize)]
-struct EditResponse <'r> {
-    message: &'r str,
-}
-
-#[derive(Serialize)]
-struct DeleteResponse {
-    message: & 'static str,
-}
-
-#[derive(Serialize)]
-struct AllComment {
-    id: Uuid,
-    message: & 'static str,
-}
-
-#[derive(Serialize)]
-struct GetAllResponse  {
-    comments: Vec<AllComment>, 
-}
+use self::request::*;
+use self::responses::*;
 
 
 
 
 #[post("/create_answer?<user_id>&<answer_id>", data = "<comment>")]
-pub fn create_comment_answer<'a>(user_id: Uuid, answer_id: Uuid, comment: Json<Comment<'_>>) -> Json<ResponseComment> {
+pub fn create_comment_answer<'a>(user_id: i32, answer_id: i32, comment: Json<Comment<'_>>) -> Json<ResponseComment> {
 
-    let conn = connection_db;
+    use schema::comments;
 
-    let comment_id = Uuid::new_v4();
+    let conn = connection_db();
 
-    return Json(ResponseComment { user_id: user_id, qa_id: answer_id, comment: comment.message, id: comment_id })
+    let new_comment = NewComment {
+        answer_id: Some(answer_id),
+        question_id: None,
+        user_id: user_id, 
+        comment: comment.message,
+    };
+
+    let comment : LoadComment;
+
+    comment = diesel::insert_into(comments::table)
+        .values(&new_comment)
+        .get_result(&conn)
+        .expect("Error saving new comment for answer!!");
+
+    let qa_id = comment.answer_id.unwrap();
+
+    return Json(ResponseComment { user_id: comment.user_id, qa_id: qa_id, comment: comment.comment, id: comment.id  })
 }
 
 #[post("/create_question?<user_id>&<question_id>", data = "<comment>")]
-fn create_comment_question(user_id: Uuid, question_id: Uuid, comment: Json<Comment<'_>> ) -> Json<ResponseComment> {
+fn create_comment_question(user_id: i32, question_id: i32, comment: Json<Comment<'_>> ) -> Json<ResponseComment> {
 
-    let comment_id = Uuid::new_v4();
+  use schema::comments;
 
-    return Json(ResponseComment { user_id: user_id, qa_id: question_id, comment: comment.message, id: comment_id })
+  let conn = connection_db();
+
+  let new_comment = NewComment {
+      answer_id: None,
+      question_id: Some(question_id),
+      user_id: user_id, 
+      comment: comment.message,
+  };
+
+  let comment : LoadComment;
+
+  comment = diesel::insert_into(comments::table)
+      .values(&new_comment)
+      .get_result(&conn)
+      .expect("Error saving new comment for answer!!");
+
+  let question_id = comment.question_id.unwrap();
+
+  return Json(ResponseComment { user_id: comment.user_id, qa_id: question_id, comment: comment.comment, id: comment.id  })
 }
 
 #[put("/edit",data = "<comment>")]
@@ -88,20 +79,8 @@ fn edit_comment(comment: Json<EditComment<'_>>) -> Json<EditResponse> {
 }
 
 #[delete("/delete?<comment_id>")]
-fn delete_comment(comment_id: Uuid) -> Json<DeleteResponse> {
+fn delete_comment(comment_id: i32) -> Json<DeleteResponse> {
     return Json(DeleteResponse { message: "Comentário Deletado com sucesso" });
-}
-
-#[get("/all", data = "<qa>")]
-fn get_all_comment(qa: Json<GetAllComments>) -> Json<GetAllResponse> {
-
-    let comment_first = Uuid::new_v4();
-
-    let comment_second  = Uuid::new_v4();
-
-    let comments = vec![AllComment{ id: comment_first, message: "oi lindaaa sz" }, AllComment{ id: comment_second, message: "como você tá ?" }];
-
-    return Json(GetAllResponse { comments: comments });
 }
 
 
@@ -109,5 +88,5 @@ fn get_all_comment(qa: Json<GetAllComments>) -> Json<GetAllResponse> {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/comment", routes![create_comment_answer, create_comment_question, edit_comment, delete_comment, get_all_comment])
+        .mount("/comment", routes![create_comment_answer, create_comment_question, edit_comment, delete_comment])
 }

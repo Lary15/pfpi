@@ -1,31 +1,21 @@
-use uuid::Uuid;
-use diesel::{Queryable, Insertable};
-use crate::schema::comments;
+use crate::schema::*;
+
+
+#[derive(Insertable)]
+#[table_name = "comments"]
+pub struct NewComment <'a> {
+  pub answer_id: Option<i32> ,
+  pub question_id: Option<i32>,
+  pub user_id: i32,
+  pub comment: &'a str,
+}
+
 
 #[derive(Queryable)]
-pub struct Comment {
-  pub id: Uuid,
-  pub answer_id: Uuid,
-  pub question_id: Uuid,
-  pub user_id: Uuid,
-  pub comment: String,
-}
-
-
-#[derive(Insertable)]
-#[table_name = "comments"]
-pub struct Comment_Answer <'a> {
-  pub id: Uuid,
-  pub answer_id: Uuid,
-  pub user_id: Uuid,
-  pub comment: & 'a str,
-}
-
-#[derive(Insertable)]
-#[table_name = "comments"]
-pub struct Comment_Question <'a> {
-  pub id: Uuid,
-  pub question_id: Uuid,
-  pub user_id: Uuid,
-  pub comment: & 'a str,
+pub struct LoadComment {
+  pub id: i32,
+  pub answer_id: Option<i32> ,
+  pub question_id: Option<i32>,
+  pub user_id: i32,
+  pub comment:  String,
 }

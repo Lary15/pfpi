@@ -9,6 +9,6 @@ edition = "2018"
 rocket = { version = "0.5.0-rc.1", features = ["secrets", "tls", "json", "uuid"] }
 serde = { version = "1.0", features = ["derive"] }
 uuid = { version = "0.8", features = ["v4"] }
-diesel = { version = "1.4.4", features = ["postgres"] }
+diesel = { version = "1.4.4", features = ["postgres", "uuid"] }
 dotenv = "0.15.0"
  
