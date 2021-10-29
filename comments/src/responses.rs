@@ -1,4 +1,5 @@
 use rocket::serde::Serialize;
+use crate::models::LoadComment;
 
 #[derive(Serialize)]
 pub struct ResponseComment {
@@ -26,5 +27,5 @@ pub struct AllComment {
 
 #[derive(Serialize)]
 pub struct GetAllResponse {
-  pub comments: Vec<AllComment>,
+  pub comments: Vec<LoadComment>,
 }
