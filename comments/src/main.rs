@@ -9,10 +9,8 @@ pub mod connection;
 pub mod request;
 pub mod responses;
 
-use rocket::serde::{Deserialize, Serialize, json::Json};
+use rocket::serde::json::Json;
 use diesel::prelude::*;
-use dotenv::dotenv;
-use std::env;
 use self::models::*;
 use self::connection::connection_db;
 use self::request::*;
@@ -73,13 +71,33 @@ fn create_comment_question(user_id: i32, question_id: i32, comment: Json<Comment
   return Json(ResponseComment { user_id: comment.user_id, qa_id: question_id, comment: comment.comment, id: comment.id  })
 }
 
-#[put("/edit",data = "<comment>")]
-fn edit_comment(comment: Json<EditComment<'_>>) -> Json<EditResponse> {
+#[put("/edit",data = "<comment_request>")]
+fn edit_comment(comment_request: Json<EditComment<'_>>) -> Json<EditResponse> {
+
+    use schema::comments::dsl::{comment, comments};
+
+    let conn = connection_db();
+
+
+    diesel::update(comments.find(comment_request.id))
+        .set(comment.eq(comment_request.message))
+        .execute(&conn)
+        .expect("Error updating comment");
+
     return Json(EditResponse { message: "Comentário Editado com sucesso"});
 }
 
 #[delete("/delete?<comment_id>")]
 fn delete_comment(comment_id: i32) -> Json<DeleteResponse> {
+
+    use schema::comments::dsl::*;
+
+    let conn = connection_db();
+
+    diesel::delete(comments.find(comment_id))
+        .execute(&conn)
+        .expect("Error deleting comment");
+
     return Json(DeleteResponse { message: "Comentário Deletado com sucesso" });
 }
 
