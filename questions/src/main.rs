@@ -30,13 +30,13 @@ struct AnswerCreate<'r> {
 
 #[get("/question", format = "json")]
 fn get_questions() -> Json<Vec<Question>> {
-    let mut list:Vec<Question> = vec![];
-    list.push(Question{id: 1, body: String::from("O que esta acontencendo?"), user_id: 1});
+    let list:Vec<Question> = db::get_questions();
     Json(list)
 }
 
 #[post("/question", format = "json", data= "<question>")]
 fn create_question(question: Json<QuestionCreate<'_>>)  -> Json<&str> {
+    db::create_question(&question);
     Json("")
 }
 

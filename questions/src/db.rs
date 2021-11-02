@@ -25,3 +25,13 @@ pub fn create_question(question: &QuestionCreate) {
         .execute(&connection)
         .expect("Error saving new post");
 }
+
+pub fn get_questions() -> Vec<Question> {
+    use crate::schema::questions;
+    use crate::schema::questions::dsl::*;
+
+    let connection = establish_connection();
+    questions
+        .load::<Question>(&connection)
+        .expect("Error loading posts")
+}
