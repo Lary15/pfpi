@@ -3,6 +3,11 @@ use dotenv::dotenv;
 use std::env;
 use crate::models::*;
 
+no_arg_sql_function!(
+    last_insert_rowid,
+    diesel::sql_types::Integer,
+    "Represents the SQL last_insert_row() function"
+);
 
 fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -14,7 +19,7 @@ fn establish_connection() -> SqliteConnection {
                                    database_url))
 }
 
-pub fn create_question(question: &QuestionCreate) {
+pub fn create_question(question: &QuestionCreate)-> Question {
     use crate::schema::questions;
     use crate::schema::questions::dsl::*;
 
@@ -24,6 +29,11 @@ pub fn create_question(question: &QuestionCreate) {
         .values(question)
         .execute(&connection)
         .expect("Error saving new post");
+    
+    let id_ = diesel::select(last_insert_rowid)
+        .get_result::<i32>(&connection).expect(""); // <--- returns Result<i32, Error>
+
+    find_by_id(id_).unwrap()
 }
 
 pub fn get_questions() -> Vec<Question> {
@@ -34,4 +44,20 @@ pub fn get_questions() -> Vec<Question> {
     questions
         .load::<Question>(&connection)
         .expect("Error loading posts")
+}
+
+pub fn find_by_id(id_: i32) -> Option<Question>{
+    use crate::schema::questions;
+    use crate::schema::questions::dsl::*;
+    let connection = establish_connection();
+
+    let result = questions
+        .filter(id.eq(id_))
+        .load::<Question>(&connection)
+        .expect("Error loading posts");
+
+    if result.len() > 0{
+        return Some(result[0].clone());
+    }
+    else{ return None;}
 }

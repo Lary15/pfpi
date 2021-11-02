@@ -1,7 +1,7 @@
 use super::schema::questions;
 use rocket::serde::{Serialize, Deserialize};
 
-#[derive(Queryable, Serialize)]
+#[derive(Queryable, Serialize, Clone)]
 pub struct Question {
     pub id: i32,
     pub body: String,

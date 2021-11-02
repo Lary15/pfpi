@@ -35,18 +35,18 @@ fn get_questions() -> Json<Vec<Question>> {
 }
 
 #[post("/question", format = "json", data= "<question>")]
-fn create_question(question: Json<QuestionCreate<'_>>)  -> Json<&str> {
-    db::create_question(&question);
-    Json("")
+fn create_question(question: Json<QuestionCreate<'_>>)  -> Json<Question> {
+    Json( db::create_question(&question))
 }
 
 #[get("/question/<question_id>")]
-fn get_question_id(question_id: i32) -> Json<Question> {
-    Json(Question {
-        id: question_id,
-        body: String::from("get questiont este?"),
-        user_id: 1,
-    })
+fn get_question_id(question_id: i32) -> Json<Option<Question>> {
+    let q = db::find_by_id(question_id);
+
+    if let Some(ques) = q  {
+        return Json(Some(ques));
+    }
+    return Json(None);
 }
 
 #[get("/answer/<question_id>")]
