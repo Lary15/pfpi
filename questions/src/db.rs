@@ -33,7 +33,7 @@ pub fn create_question(question: &QuestionCreate)-> Question {
     let id_ = diesel::select(last_insert_rowid)
         .get_result::<i32>(&connection).expect(""); // <--- returns Result<i32, Error>
 
-    find_by_id(id_).unwrap()
+    question_find_by_id(id_).unwrap()
 }
 
 pub fn get_questions() -> Vec<Question> {
@@ -46,7 +46,7 @@ pub fn get_questions() -> Vec<Question> {
         .expect("Error loading posts")
 }
 
-pub fn find_by_id(id_: i32) -> Option<Question>{
+pub fn question_find_by_id(id_: i32) -> Option<Question>{
     use crate::schema::questions;
     use crate::schema::questions::dsl::*;
     let connection = establish_connection();
@@ -60,4 +60,63 @@ pub fn find_by_id(id_: i32) -> Option<Question>{
         return Some(result[0].clone());
     }
     else{ return None;}
+}
+
+pub fn answer_find_by_question_id(id_: i32) -> Option<Answer>{
+    use crate::schema::answers;
+    use crate::schema::answers::dsl::*;
+    let connection = establish_connection();
+
+    let result = answers
+        .filter(question_id.eq(id_))
+        .load::<Answer>(&connection)
+        .expect("Error loading posts");
+
+    if result.len() > 0{
+        return Some(result[0].clone());
+    }
+    else{ return None;}
+}
+
+pub fn answer_find_by_id(id_: i32) -> Option<Answer>{
+    use crate::schema::answers;
+    use crate::schema::answers::dsl::*;
+    let connection = establish_connection();
+
+    let result = answers
+        .filter(id.eq(id_))
+        .load::<Answer>(&connection)
+        .expect("Error loading posts");
+
+    if result.len() > 0{
+        return Some(result[0].clone());
+    }
+    else{ return None;}
+}
+
+
+pub fn create_answer(question: &AnswerCreate)-> Answer {
+    use crate::schema::answers;
+    use crate::schema::answers::dsl::*;
+    let connection = establish_connection();
+
+    diesel::insert_into(answers::table)
+        .values(question)
+        .execute(&connection)
+        .expect("Error saving new post");
+    
+    let id_ = diesel::select(last_insert_rowid)
+        .get_result::<i32>(&connection).expect(""); // <--- returns Result<i32, Error>
+
+    answer_find_by_id(id_).unwrap()
+}
+
+pub fn get_answers() -> Vec<Answer> {
+    use crate::schema::answers;
+    use crate::schema::answers::dsl::*;
+
+    let connection = establish_connection();
+    answers
+        .load::<Answer>(&connection)
+        .expect("Error loading posts")
 }

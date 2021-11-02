@@ -1,4 +1,5 @@
 use super::schema::questions;
+use super::schema::answers;
 use rocket::serde::{Serialize, Deserialize};
 
 #[derive(Queryable, Serialize, Clone)]
@@ -17,17 +18,17 @@ pub struct QuestionCreate<'r> {
 
 
 #[derive(Queryable, Serialize, Clone)]
-struct Answer {
-    id: i32,
-    body: String,
-    user_id: i32,
-    question_id: i32
+pub struct Answer {
+    pub id: i32,
+    pub body: String,
+    pub user_id: i32,
+    pub question_id: i32
 }
 
 #[derive(Deserialize, Insertable)]
 #[table_name = "answers"]
-struct AnswerCreate<'r> {
-    body: &'r str,
-    user_id: i32,
-    question_id: i32
+pub struct AnswerCreate<'r> {
+    pub body: &'r str,
+    pub user_id: i32,
+    pub question_id: i32
 }

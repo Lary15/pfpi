@@ -41,7 +41,7 @@ fn create_question(question: Json<QuestionCreate<'_>>)  -> Json<Question> {
 
 #[get("/question/<question_id>")]
 fn get_question_id(question_id: i32) -> Json<Option<Question>> {
-    let q = db::find_by_id(question_id);
+    let q = db::question_find_by_id(question_id);
 
     if let Some(ques) = q  {
         return Json(Some(ques));
