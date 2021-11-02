@@ -10,7 +10,7 @@ pub struct Question {
 
 #[derive(Deserialize, Insertable)]
 #[table_name = "questions"]
-struct QuestionCreate<'r> {
-    body: &'r str,
-    user_id: i32
+pub struct QuestionCreate<'r> {
+    pub body: &'r str,
+    pub user_id: i32
 }

@@ -13,12 +13,6 @@ use models::*;
 // use self::diesel::prelude::*;
 use rocket::serde::{Deserialize, Serialize, json::Json};
 
-#[derive(Deserialize)]
-struct QuestionCreate<'r> {
-    body: &'r str,
-    user_id: i32
-}
-
 #[derive(Serialize)]
 struct Answer {
     id: i32,
@@ -42,13 +36,8 @@ fn get_questions() -> Json<Vec<Question>> {
 }
 
 #[post("/question", format = "json", data= "<question>")]
-fn create_question(question: Json<QuestionCreate<'_>>)  -> Json<Question> {
-    let question = question;
-    Json( Question {
-        id: 1,
-        body: question.body.to_owned(),
-        user_id: question.user_id,
-    })
+fn create_question(question: Json<QuestionCreate<'_>>)  -> Json<&str> {
+    Json("")
 }
 
 #[get("/question/<question_id>")]

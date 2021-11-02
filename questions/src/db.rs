@@ -1,10 +1,8 @@
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
-
-use crate::schema::questions;
-use crate::schema::questions::dsl::*;
 use crate::models::*;
+
 
 fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -16,12 +14,14 @@ fn establish_connection() -> SqliteConnection {
                                    database_url))
 }
 
-// pub fn create_question(question: &QuestionCreate) {
-//     let connection = establish_connection();
+pub fn create_question(question: &QuestionCreate) {
+    use crate::schema::questions;
+    use crate::schema::questions::dsl::*;
 
-//     diesel::insert_into(questions::table)
-//         .values(&question)
-//         .execute(&connection)
-//         .expect("Error saving new post");
-    
-// }
+    let connection = establish_connection();
+
+    diesel::insert_into(questions::table)
+        .values(question)
+        .execute(&connection)
+        .expect("Error saving new post");
+}

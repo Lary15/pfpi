@@ -1,7 +1,7 @@
 table! {
     questions (id) {
-        id -> Nullable<Integer>,
-        body -> Nullable<Text>,
+        id -> Integer,
+        body -> Text,
         user_id -> Integer,
     }
 }
