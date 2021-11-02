@@ -13,20 +13,6 @@ use models::*;
 // use self::diesel::prelude::*;
 use rocket::serde::{Deserialize, Serialize, json::Json};
 
-#[derive(Serialize)]
-struct Answer {
-    id: i32,
-    body: String,
-    user_id: i32,
-    question_id: i32
-}
-
-#[derive(Deserialize)]
-struct AnswerCreate<'r> {
-    body: &'r str,
-    user_id: i32,
-    question_id: i32
-}
 
 #[get("/question", format = "json")]
 fn get_questions() -> Json<Vec<Question>> {
@@ -51,19 +37,13 @@ fn get_question_id(question_id: i32) -> Json<Option<Question>> {
 
 #[get("/answer/<question_id>")]
 fn get_answers(question_id: i32) -> Json<Vec<Answer>> {
-    let mut list:Vec<Answer> = vec![];
-    list.push(Answer{id: 1, body: String::from("O que esta acontencendo?"), user_id: 1, question_id: 1});
+    let list:Vec<Answer> = db::answer_find_by_question_id(question_id);
     Json(list)
 }
 
 #[post("/answer", format = "json", data= "<answer>")]
 fn create_answer(answer: Json<AnswerCreate<'_>>)  -> Json<Answer> {
-    Json(Answer {
-        id: 1,
-        body: answer.body.to_owned(),
-        user_id: answer.user_id,
-        question_id: answer.question_id
-    })
+    Json(db::create_answer(&answer))
 }
 
 #[launch]

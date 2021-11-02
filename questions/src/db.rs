@@ -62,20 +62,15 @@ pub fn question_find_by_id(id_: i32) -> Option<Question>{
     else{ return None;}
 }
 
-pub fn answer_find_by_question_id(id_: i32) -> Option<Answer>{
+pub fn answer_find_by_question_id(id_: i32) -> Vec<Answer>{
     use crate::schema::answers;
     use crate::schema::answers::dsl::*;
     let connection = establish_connection();
 
-    let result = answers
+    answers
         .filter(question_id.eq(id_))
         .load::<Answer>(&connection)
-        .expect("Error loading posts");
-
-    if result.len() > 0{
-        return Some(result[0].clone());
-    }
-    else{ return None;}
+        .expect("Error loading posts")
 }
 
 pub fn answer_find_by_id(id_: i32) -> Option<Answer>{
