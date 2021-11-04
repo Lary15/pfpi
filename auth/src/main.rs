@@ -6,5 +6,5 @@ mod oauth;
 
 #[launch]
 pub fn rocket() -> _ {
-    rocket::build().mount("/login", routes![api::login])
+    rocket::build().mount("/auth", routes![api::login, api::login_redirect])
 }
